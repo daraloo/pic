@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>Gallery</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:tahoma;
+}
+
+body{
+display:flex;
+height:100vh;
+overflow:hidden;
+background:#111;
+}
+
+#menu{
+
+width:280px;
+
+background:#202124;
+
+overflow:auto;
+
+transition:.3s;
+
+}
+
+#menu button{
+
+width:100%;
+
+padding:15px;
+
+border:none;
+
+background:none;
+
+color:white;
+
+cursor:pointer;
+
+text-align:right;
+
+border-bottom:1px solid #444;
+
+font-size:15px;
+
+}
+
+#menu button:hover{
+
+background:#444;
+
+}
+
+#menu button.active{
+
+background:#0d6efd;
+
+}
+
+#viewer{
+
+flex:1;
+
+height:100vh;
+
+}
+
+iframe{
+
+width:100%;
+
+height:100%;
+
+border:none;
+
+background:black;
+
+}
+
+#toggle{
+
+display:none;
+
+position:absolute;
+
+top:10px;
+
+right:10px;
+
+z-index:999;
+
+background:#0d6efd;
+
+color:white;
+
+border:none;
+
+padding:10px 15px;
+
+font-size:22px;
+
+border-radius:5px;
+
+}
+
+@media(max-width:768px){
+
+#toggle{
+
+display:block;
+
+}
+
+#menu{
+
+position:absolute;
+
+right:-280px;
+
+top:0;
+
+height:100%;
+
+z-index:998;
+
+}
+
+#menu.open{
+
+right:0;
+
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<button id="toggle">☰</button>
+
+<div id="menu"></div>
+
+<div id="viewer">
+
+<iframe id="frame"></iframe>
+
+</div>
+
+<script>
+
+const API_URL="https://script.google.com/macros/s/AKfycbw-84AIl4r_i4hyrbEXNHVthX-snLWeu1nLkLVwsheh3CJvWYLFUhbNVSW9QqeGFlgH/exec";
+
+const menu=document.getElementById("menu");
+
+const frame=document.getElementById("frame");
+
+const toggle=document.getElementById("toggle");
+
+let current="";
+
+async function loadGallery(){
+
+const res=await fetch(API_URL);
+
+const data=await res.json();
+
+menu.innerHTML="";
+
+data.forEach((item,index)=>{
+
+const btn=document.createElement("button");
+
+btn.innerText=item.name.replace(/\.[^/.]+$/,"");
+
+btn.onclick=function(){
+
+frame.src=item.preview;
+
+document.querySelectorAll("#menu button").forEach(b=>b.classList.remove("active"));
+
+btn.classList.add("active");
+
+current=item.id;
+
+if(window.innerWidth<768){
+
+menu.classList.remove("open");
+
+}
+
+};
+
+menu.appendChild(btn);
+
+if(index==0){
+
+btn.click();
+
+}
+
+});
+
+}
+
+toggle.onclick=function(){
+
+menu.classList.toggle("open");
+
+};
+
+loadGallery();
+
+setInterval(loadGallery,60000);
+
+</script>
+
+</body>
+
+</html>
